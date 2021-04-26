@@ -1,8 +1,8 @@
-package com.food.app;
+package app;
 
 import java.io.IOException;
 
-public class MainApp {
+public class Run {
 	public static void main(String[] args) throws IOException {
 		
 	}
