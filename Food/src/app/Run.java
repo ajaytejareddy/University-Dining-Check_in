@@ -49,11 +49,16 @@ public class Run {
 	public static void main(String[] args) throws IOException {
 		
 		dbConnect();
-		
-		@SuppressWarnings("unused")
-		LogIn user = new LogIn(conn);
-		
-		
+		while(true) {
+			Login user = new Login(conn);
+			
+			if(user.getManagerStatus()) {
+				Manager manager = new Manager(user,conn);
+				if(manager.run()) {
+					continue;
+				}
+			}
+		}
 	}
 	
 }

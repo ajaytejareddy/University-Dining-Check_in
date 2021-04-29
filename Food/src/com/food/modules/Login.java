@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class LogIn {
+public class Login {
 	
 	@SuppressWarnings("unused")
 	private String email,password,name,address;
@@ -26,7 +26,7 @@ public class LogIn {
 		isSignedIn = false;
 	}
 	
-	public LogIn(Connection conn) throws IOException{
+	public Login(Connection conn) throws IOException{
 		this.conn = conn;
 		if(isSignedIn == false) {
 			userInput();
@@ -37,17 +37,27 @@ public class LogIn {
 		System.out.println("Choose any Option:");
 		System.out.println("1.SignIn");
 		System.out.println("2.SignUp");
+		System.out.println("3.Exit from Program");
 		String option = input.readLine();
 		
 		//System.out.println((option.equals("1"))+"");
 		
-		while (!(option.equals("1") ^ option.equals("2")))
+		while (!(option.equals("1") ^ option.equals("2")^option.equals("3")))
 			option = input.readLine();
 		
 		if (option.equals("1"))
 			signIn();
 		else if(option.equals("2"))
 			signUp();
+		else if(option.equals("3")) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			System.exit(0);
+		}
+			
 	}
 	
 	
