@@ -7,12 +7,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class Manager {
 	private BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-	@SuppressWarnings("unused")
 	private Login user;
 	private Connection conn;
 	private PreparedStatement ps;
@@ -24,11 +22,10 @@ public class Manager {
 	
 	class EmpPair{
 		
-		private String name,email,dept;
+		private String name,email;
 		public EmpPair(String email,String name) {
 			this.name = name;
 			this.email = email;
-			this.dept = dept;
 		}
 		
 		public String getName() {
@@ -40,20 +37,159 @@ public class Manager {
 		
 	}
 	
-	private void addCookItems() {
+	class ItemPair{
+			
+			private String name,price;
+			public ItemPair(String name,String price) {
+				this.name = name;
+				this.price = price;
+			}
+			
+			public String getName() {
+				return name;
+			}
+			public String getPrice() {
+				return price;
+			}
+			
+		}
+	
+	private void addCookItems() throws IOException {
+		//String Option;
+		int Option,quantity,i;
+		ArrayList<ItemPair> items = getItemList();
+		System.out.println("\n\t\t**ITEMS LIST**\n\n");
+		System.out.println("\tName\tprice");
+		for(i=0;i<items.size();i++) {
+			System.out.println("\t"+i+"."+items.get(i).getName()+"\t"+items.get(i).getPrice());
+		}
+		System.out.print("\nEnter you choice: ");
+		while(true){
+		try{
+				Option =  Integer.parseInt(input.readLine());
+				break;
+			}catch(Exception e) {
+				continue;
+			}
+		}
+		System.out.println("Quantity of '"+items.get(Option).getName()+"' Cooked: ");
+		while(true){
+			try{
+					quantity =  Integer.parseInt(input.readLine());
+					
+						break;
+				}catch(Exception e) {
+					continue;
+				}
+			}
+		
+		try {
+			
+			ps = conn.prepareStatement("INSERT INTO FoodItems(ItemName,Quantity,MadeBy) VALUES(?,?,?)");
+			ps.setString(1, items.get(Option).getName());
+			ps.setInt(2, quantity);
+			ps.setString(3, user.getEmail());
+			
+			int rowsUpdated=ps.executeUpdate();
+			
+			if(rowsUpdated>0) {
+				conn.commit();
+				
+				ps = conn.prepareStatement("UPDATE FoodItems SET Dept = (SELECT Department FROM Employees WHERE Email = ?) WHERE ItemName=?");
+				ps.setString(1, user.getEmail());
+				ps.setString(2, items.get(Option).getName());
+			
+				int updated = ps.executeUpdate();
+				if(updated>0)
+					System.out.println("added successfully");
+				conn.commit();
+			}
+			
+		}catch(SQLException e) {
+			System.out.println("Database ERROR");
+		}
 		
 		
 	}
 
-	private void viewOrders() {
+	private void manageOrders() throws IOException{
+		String menuOption;
+		System.out.println("\t\t***Menu****");
+		System.out.println("\t1.Top 5 most sold item");
+		System.out.println("\t2.No of Orders Made By Customers");
+		System.out.println("\t3.View Orders");
+		System.out.println("\t4.Main Menu");
 		
+		System.out.println("Enter Your Choice:");
+		menuOption = input.readLine();
+		
+		if(menuOption.contentEquals("1")) {
+			
+			try {
+				ps = conn.prepareStatement("SELECT ItemName,SUM(Quantity) quantity FROM OrderDetails GROUP BY ItemName ORDER BY ItemName DESC FETCH NEXT 5 ROWS ONLY");
+				ResultSet rs = ps.executeQuery();
+				System.out.println("\t\tTOP 5 MOST SOLD ITEMS");
+				System.out.format("\n\t%16s%16s\n","Item Name","Quantity");
+				while(rs.next()) {
+					System.out.format("\n\t%16s%16s\n",rs.getString("ItemName"),rs.getString("quantity"));
+				}
+				System.out.println("\n\n\n");
+				
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			
+			
+		}
+		else if(menuOption.contentEquals("2")) {
+			
+			try {
+				ps = conn.prepareStatement("SELECT Name,Email,COUNT(OrderID) OrdersMade FROM Orders INNER JOIN Customers ON Customers.Email = Orders.CustID GROUP BY Name,Email ORDER BY OrdersMade DESC");
+				ResultSet rs = ps.executeQuery();
+				System.out.println("\n\n\t\tTOTAL ORDERS MADE BY CUSTOMES");
+				System.out.format("\n\t%16s%16s%16s\n","Customer Name","Email","OrdersMade");
+				while(rs.next()) {
+					System.out.format("\n\t%16s%16s%16s\n",rs.getString("Name"),rs.getString("Email"),rs.getString("OrdersMade"));
+				}
+				System.out.println("\n\n\n");
+				
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			
+			
+		}
+		else if(menuOption.contentEquals("3")) {
+			
+					try {
+						ps = conn.prepareStatement("SELECT OrderId,Date_Time,Status,Customers.Name CName,Employees.Name EName FROM Orders INNER JOIN Customers ON Customers.email = Orders.CustID INNER JOIN Employees ON Employees.Email = Orders.EmpID ORDER BY Status");
+						ResultSet rs = ps.executeQuery();
+						System.out.println("\n\n\t\t***ORDERS***");
+						System.out.format("\n%10s%10s%16s%16s%16s\n","OrderID","Date Ordered","Status","Customer Name","EmployeeName");
+						while(rs.next()) {
+							System.out.format("\n%10s%10s%16s%16s%16s\n",rs.getString("OrderId"),rs.getString("Date_Time"),rs.getString("Status"),rs.getString("CName"),rs.getString("EName"));
+						}
+						System.out.println("\n\n\n");
+						
+						
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+					
+				}
+		else if(menuOption.contentEquals("4")) {
+			return;
+		}
+		
+		return;
 		
 	}
 
 	private void addItems() throws IOException {
 		String itemName,Description;
 		float price;
-		DecimalFormat df = new DecimalFormat("#.##");
 		
 		System.out.print("Enter Food Item Name:");
 		itemName = input.readLine();
@@ -85,11 +221,11 @@ public class Manager {
 			
 			
 		} catch (SQLException e) {
-			System.out.println("Database ERROR");
+			System.out.println("Database ERROR"+e);
 		}
 		
 		
-		System.out.println("\t\tUpdated Items List");
+		System.out.println("\n\n\t\tUpdated Items List\n");
 		itemList();
 		
 		
@@ -331,7 +467,7 @@ public class Manager {
 					break;
 				case "2":addItems();
 					break;
-				case "3":viewOrders();
+				case "3":manageOrders();
 					break;
 				case "4":addCookItems();
 					break;
@@ -394,8 +530,9 @@ public class Manager {
 			ps = conn.prepareStatement("SELECT * FROM ListOfItems");
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()) {
-				System.out.println("\t\t"+rs.getString("ItemName")+"\t"+rs.getString("Description")+"\t"+rs.getString("Price_Per_Serving"));
-			}	
+				System.out.println("\t"+rs.getString("ItemName")+"\t"+rs.getString("Description")+"\t"+rs.getString("Price_Per_Serving"));
+			}
+			System.out.println("\n\n");
 			
 		} catch (SQLException e) {
 			System.out.println("Database error");
@@ -405,7 +542,33 @@ public class Manager {
 				e1.printStackTrace();
 			}
 			System.exit(0);
-		} 
+		}
+		
 	}
+	
+	private ArrayList<ItemPair> getItemList() {
+		ArrayList<ItemPair> res = new ArrayList<ItemPair>();
+		
+		try {
+			ps = conn.prepareStatement("SELECT * FROM ListOfItems");
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()) {
+				res.add(new ItemPair(rs.getString("ItemName"),rs.getString("Price_Per_Serving")));
+			}
+			System.out.println("\n\n");
+			
+		} catch (SQLException e) {
+			System.out.println("Database ERROR");
+			try {
+				conn.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			System.exit(0);
+		}
+		return res;
+		
+	}
+	
 	
 }
