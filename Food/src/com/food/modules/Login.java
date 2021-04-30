@@ -89,7 +89,7 @@ public class Login {
 	}
 	
 	private void empLogin(String email) {
-		String query = "SELECT name,isManager FROM Employees WHERE email=?";
+		String query = "SELECT name,isManager FROM ard129.Employees WHERE email=?";
 		ResultSet rsEmp=null;
 		
 		
@@ -116,7 +116,7 @@ public class Login {
 	}
 
 	private void userLogin(String email) {
-		String query = "SELECT name,password,address FROM Customers WHERE email=?";
+		String query = "SELECT name,password,address FROM ard129.Customers WHERE email=?";
 		ResultSet rsCust=null;
 		
 		
@@ -156,9 +156,9 @@ public class Login {
 		
 		//database for signup
 		if(address.isEmpty())
-			query = "INSERT INTO customers(Name,Email,password) Values('"+name+"', '"+email+"','"+password+"')";
+			query = "INSERT INTO ard129.customers(Name,Email,password) Values('"+name+"', '"+email+"','"+password+"')";
 		else
-			query = "INSERT INTO customers(Name,Email,password,address) Values('"+name+"', '"+email+"','"+password+"','"+address+"')";
+			query = "INSERT INTO ard129.customers(Name,Email,password,address) Values('"+name+"', '"+email+"','"+password+"','"+address+"')";
 		
 		if(checkCustUser(email)!=0 | checkEmpUser(email)!= 0) {
 			System.out.println("\n**Email already EXISTS**\n");
@@ -186,7 +186,7 @@ public class Login {
 	}
 
 	private int checkCustUser(String email) throws IOException {
-		String query = "SELECT COUNT(*) FROM Customers WHERE email=?";
+		String query = "SELECT COUNT(*) FROM ard129.Customers WHERE email=?";
 		ResultSet rsCust=null;
 		
 		
@@ -210,7 +210,7 @@ public class Login {
 	
 	
 	private int checkEmpUser(String email) throws IOException {
-		String query = "SELECT COUNT(*) FROM Employees WHERE email=?";
+		String query = "SELECT COUNT(*) FROM ard129.Employees WHERE email=?";
 		ResultSet rsEmp = null;
 		
 		

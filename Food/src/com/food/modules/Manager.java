@@ -85,7 +85,7 @@ public class Manager {
 		
 		try {
 			
-			ps = conn.prepareStatement("INSERT INTO FoodItems(ItemName,Quantity,MadeBy) VALUES(?,?,?)");
+			ps = conn.prepareStatement("INSERT INTO ard129,FoodItems(ItemName,Quantity,MadeBy) VALUES(?,?,?)");
 			ps.setString(1, items.get(Option).getName());
 			ps.setInt(2, quantity);
 			ps.setString(3, user.getEmail());
@@ -95,7 +95,7 @@ public class Manager {
 			if(rowsUpdated>0) {
 				conn.commit();
 				
-				ps = conn.prepareStatement("UPDATE FoodItems SET Dept = (SELECT Department FROM Employees WHERE Email = ?) WHERE ItemName=?");
+				ps = conn.prepareStatement("UPDATE ard129.FoodItems SET Dept = (SELECT Department FROM ard129.Employees WHERE Email = ?) WHERE ItemName=?");
 				ps.setString(1, user.getEmail());
 				ps.setString(2, items.get(Option).getName());
 			
@@ -126,7 +126,7 @@ public class Manager {
 		if(menuOption.contentEquals("1")) {
 			
 			try {
-				ps = conn.prepareStatement("SELECT ItemName,SUM(Quantity) quantity FROM OrderDetails GROUP BY ItemName ORDER BY ItemName DESC FETCH NEXT 5 ROWS ONLY");
+				ps = conn.prepareStatement("SELECT ItemName,SUM(Quantity) quantity FROM ard129.OrderDetails GROUP BY ItemName ORDER BY ItemName DESC FETCH NEXT 5 ROWS ONLY");
 				ResultSet rs = ps.executeQuery();
 				System.out.println("\t\tTOP 5 MOST SOLD ITEMS");
 				System.out.format("\n\t%16s%16s\n","Item Name","Quantity");
@@ -145,7 +145,7 @@ public class Manager {
 		else if(menuOption.contentEquals("2")) {
 			
 			try {
-				ps = conn.prepareStatement("SELECT Name,Email,COUNT(OrderID) OrdersMade FROM Orders INNER JOIN Customers ON Customers.Email = Orders.CustID GROUP BY Name,Email ORDER BY OrdersMade DESC");
+				ps = conn.prepareStatement("SELECT Name,Email,COUNT(OrderID) OrdersMade FROM ard129.Orders ord INNER JOIN ard129.Customers cust ON cust.Email = ord.CustID GROUP BY Name,Email ORDER BY OrdersMade DESC");
 				ResultSet rs = ps.executeQuery();
 				System.out.println("\n\n\t\tTOTAL ORDERS MADE BY CUSTOMES");
 				System.out.format("\n\t%16s%16s%16s\n","Customer Name","Email","OrdersMade");
@@ -164,7 +164,7 @@ public class Manager {
 		else if(menuOption.contentEquals("3")) {
 			
 					try {
-						ps = conn.prepareStatement("SELECT * FROM MOrders");
+						ps = conn.prepareStatement("SELECT * FROM ard129.MOrders");
 						ResultSet rs = ps.executeQuery();
 						System.out.println("\n\n\t\t***ORDERS***");
 						System.out.format("\n%10s  %28s  %16s  %16s  %16s\n","OrderID","Date Ordered","Status","Customer Name","EmployeeName");
@@ -208,7 +208,7 @@ public class Manager {
 		//Databse
 		try {
 			
-			ps = conn.prepareStatement("INSERT INTO ListOfItems VALUES(?,?,?)");
+			ps = conn.prepareStatement("INSERT INTO ard129.ListOfItems VALUES(?,?,?)");
 			ps.setString(1,itemName);
 			ps.setString(2,Description);
 			ps.setFloat(3,price);
@@ -300,7 +300,7 @@ public class Manager {
 					}
 					
 					//database insertion
-					query = "INSERT INTO Employees(Name,email,ismanager,isfulltime,department) VALUES(?,?,?,?,?)";
+					query = "INSERT INTO ard129.Employees(Name,email,ismanager,isfulltime,department) VALUES(?,?,?,?,?)";
 					
 					try {
 						ps = conn.prepareStatement(query);
@@ -356,7 +356,7 @@ public class Manager {
 				
 				try {
 					
-					ps = conn.prepareStatement("DELETE FROM Employees WHERE email = ?");
+					ps = conn.prepareStatement("DELETE FROM ard129.Employees WHERE email = ?");
 					ps.setString(1,emp.get(inp).getEmail());
 					int rowsDeleted = ps.executeUpdate();
 					if(rowsDeleted>0) {
@@ -380,7 +380,7 @@ public class Manager {
 				ArrayList<EmpPair> emp;
 				
 				
-				System.out.println("\t Remove any Employee:");
+				System.out.println("\t Change Employee Department:");
 				emp = getEmp();
 				for(i=0;i<emp.size();i++) {
 					System.out.println("\t"+i+". "+emp.get(i).getName()+" ( "+emp.get(i).getEmail()+" )");
@@ -426,7 +426,7 @@ public class Manager {
 				}
 				
 				try {
-					ps = conn.prepareStatement("UPDATE Employees SET Department = ? WHERE Email = ?");
+					ps = conn.prepareStatement("UPDATE ard129.Employees SET Department = ? WHERE Email = ?");
 					ps.setString(1,dept.get(deptOption));
 					ps.setString(2,emp.get(inp).getEmail());
 					int rowsUpdated=ps.executeUpdate();
@@ -480,7 +480,7 @@ public class Manager {
 	
 	private ArrayList<String> getDept() {
 		ArrayList<String> result = new ArrayList<String>();
-		String query = "SELECT DName FROM Department";
+		String query = "SELECT DName FROM ard129.Department";
 		
 		try {
 			ps = conn.prepareStatement(query);
@@ -505,7 +505,7 @@ public class Manager {
 		
 		
 		
-		String query = "SELECT Email,Name FROM Employees";
+		String query = "SELECT Email,Name FROM ard129.Employees";
 		
 		try {
 			ps = conn.prepareStatement(query);
@@ -527,7 +527,7 @@ public class Manager {
 	
 	private void itemList() {
 		try {
-			ps = conn.prepareStatement("SELECT * FROM ListOfItems");
+			ps = conn.prepareStatement("SELECT * FROM ard129.ListOfItems");
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()) {
 				System.out.println("\t"+rs.getString("ItemName")+"\t"+rs.getString("Description")+"\t"+rs.getString("Price_Per_Serving"));
@@ -550,7 +550,7 @@ public class Manager {
 		ArrayList<ItemPair> res = new ArrayList<ItemPair>();
 		
 		try {
-			ps = conn.prepareStatement("SELECT * FROM ListOfItems");
+			ps = conn.prepareStatement("SELECT * FROM ard129.ListOfItems");
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()) {
 				res.add(new ItemPair(rs.getString("ItemName"),rs.getString("Price_Per_Serving")));

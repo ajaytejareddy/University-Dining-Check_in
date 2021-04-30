@@ -97,7 +97,7 @@ public class Employee {
 				
 				try {
 					
-					ps = conn.prepareStatement("INSERT INTO FoodItems(ItemName,Quantity,MadeBy) VALUES(?,?,?)");
+					ps = conn.prepareStatement("INSERT INTO ard129.FoodItems(ItemName,Quantity,MadeBy) VALUES(?,?,?)");
 					ps.setString(1, items.get(Option).getName());
 					ps.setInt(2, quantity);
 					ps.setString(3, user.getEmail());
@@ -107,7 +107,7 @@ public class Employee {
 					if(rowsUpdated>0) {
 						conn.commit();
 						
-						ps = conn.prepareStatement("UPDATE FoodItems SET Dept = (SELECT Department FROM Employees WHERE Email = ?) WHERE ItemName=?");
+						ps = conn.prepareStatement("UPDATE ard129.FoodItems SET Dept = (SELECT Department FROM ard129.Employees WHERE Email = ?) WHERE ItemName=?");
 						ps.setString(1, user.getEmail());
 						ps.setString(2, items.get(Option).getName());
 					
@@ -128,7 +128,7 @@ public class Employee {
 			
 		ArrayList<ItemPair> res = new ArrayList<ItemPair>();
 		try {
-			ps = conn.prepareStatement("SELECT * FROM ListOfItems");
+			ps = conn.prepareStatement("SELECT * FROM ard129.ListOfItems");
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()) {
 				res.add(new ItemPair(rs.getString("ItemName"),rs.getString("Price_Per_Serving")));

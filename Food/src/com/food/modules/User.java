@@ -157,7 +157,7 @@ public class User {
 		
 		try {
 			
-			ps = conn.prepareStatement("INSERT INTO Orders(OrderId,Date_Time,CustId,Status) VALUES(orderId_inrement.NEXTVAL,?,?,?)");
+			ps = conn.prepareStatement("INSERT INTO ard129.Orders(OrderId,Date_Time,CustId,Status) VALUES(orderId_inrement.NEXTVAL,?,?,?)");
 			ts = Timestamp.from(Instant.now());
 			ps.setTimestamp(1, ts);
 			ps.setString(2, user.getEmail());
@@ -169,7 +169,7 @@ public class User {
 			conn.commit();
 			
 			
-			ps = conn.prepareStatement("SELECT OrderID FROM Orders WHERE CustId=? AND Date_Time = ?");
+			ps = conn.prepareStatement("SELECT OrderID FROM ard129.Orders WHERE CustId=? AND Date_Time = ?");
 			ps.setString(1, user.getEmail());
 			ps.setTimestamp(2, ts);
 			ResultSet rs = ps.executeQuery();
@@ -180,7 +180,7 @@ public class User {
 			
 			for(i=0;i<order.size();i++) {
 				try {
-					ps = conn.prepareStatement("INSERT INTO OrderDetails(OrderId,ItemName,Quantity,Amount) VALUES(?,?,?,?)");
+					ps = conn.prepareStatement("INSERT INTO ard129.OrderDetails(OrderId,ItemName,Quantity,Amount) VALUES(?,?,?,?)");
 					
 					ps.setInt(1,orderid);
 					ps.setString(2, order.get(i).getName());
@@ -191,14 +191,14 @@ public class User {
 					conn.commit();
 					
 					
-					ps = conn.prepareStatement("DELETE FROM FoodItems WHERE Quantity = ? AND ItemName = ?");
+					ps = conn.prepareStatement("DELETE FROM ard129.FoodItems WHERE Quantity = ? AND ItemName = ?");
 					ps.setInt(1, order.get(i).getQuantity());
 					ps.setString(2, order.get(i).getName());
 					ps.executeUpdate();
 					conn.commit();
 					
 					
-					ps = conn.prepareStatement("UPDATE FoodItems SET Quantity = Quantity - ? WHERE ItemName = ? ");
+					ps = conn.prepareStatement("UPDATE ard129.FoodItems SET Quantity = Quantity - ? WHERE ItemName = ? ");
 					//ps.setString(1, order.get(i).getName());
 					ps.setInt(1, order.get(i).getQuantity());
 					ps.setString(2, order.get(i).getName());
@@ -223,13 +223,13 @@ public class User {
 		
 		try {
 			
-			ps = conn.prepareStatement("SELECT OrderId,Date_time FROM Orders WHERE CUSTID = ? ORDER BY Date_Time DESC");
+			ps = conn.prepareStatement("SELECT OrderId,Date_time FROM ard129.Orders WHERE CUSTID = ? ORDER BY Date_Time DESC");
 			ps.setString(1, user.getEmail());
 			ResultSet rs = ps.executeQuery();
 			
 			System.out.println("\n");
 			while(rs.next()) {
-				PreparedStatement ps1 = conn.prepareStatement("SELECT * FROM OrderDetails WHERE OrderId=?");
+				PreparedStatement ps1 = conn.prepareStatement("SELECT * FROM ard129.OrderDetails WHERE OrderId=?");
 				ps1.setInt(1,rs.getInt("OrderId"));
 				
 				
@@ -258,7 +258,7 @@ public class User {
 	public ArrayList<Items> getFoodItems() {
 		ArrayList<Items> res = new ArrayList<Items>();
 		try {
-			ps = conn.prepareStatement("SELECT ItemName, Dept, Quantity,price_per_serving FROM FoodItems INNER JOIN ListOfItems USING(ItemName) WHERE Quantity>? ORDER BY Dept");
+			ps = conn.prepareStatement("SELECT ItemName, Dept, Quantity,price_per_serving FROM ard129.FoodItems INNER JOIN ard129.ListOfItems USING(ItemName) WHERE Quantity>? ORDER BY Dept");
 			ps.setInt(1, 0);
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()) {
