@@ -164,12 +164,12 @@ public class Manager {
 		else if(menuOption.contentEquals("3")) {
 			
 					try {
-						ps = conn.prepareStatement("SELECT OrderId,Date_Time,Status,Customers.Name CName,Employees.Name EName FROM Orders INNER JOIN Customers ON Customers.email = Orders.CustID INNER JOIN Employees ON Employees.Email = Orders.EmpID ORDER BY Status");
+						ps = conn.prepareStatement("SELECT * FROM MOrders");
 						ResultSet rs = ps.executeQuery();
 						System.out.println("\n\n\t\t***ORDERS***");
-						System.out.format("\n%10s%10s%16s%16s%16s\n","OrderID","Date Ordered","Status","Customer Name","EmployeeName");
+						System.out.format("\n%10s  %28s  %16s  %16s  %16s\n","OrderID","Date Ordered","Status","Customer Name","EmployeeName");
 						while(rs.next()) {
-							System.out.format("\n%10s%10s%16s%16s%16s\n",rs.getString("OrderId"),rs.getString("Date_Time"),rs.getString("Status"),rs.getString("CName"),rs.getString("EName"));
+							System.out.format("\n%10s  %28s  %16s  %16s  %16s\n",rs.getString("OrderId"),rs.getString("Date_Time"),rs.getString("Status"),rs.getString("CName"),rs.getString("EName"));
 						}
 						System.out.println("\n\n\n");
 						

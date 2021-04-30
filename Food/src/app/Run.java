@@ -58,6 +58,17 @@ public class Run {
 					continue;
 				}
 			}
+			
+			else if(user.getEmpStatus()) {
+				Employee emp = new Employee(user,conn);
+				emp.run();
+			}
+			
+			else {
+				User cust = new User(user,conn);
+				cust.run();
+			}
+			
 		}
 	}
 	

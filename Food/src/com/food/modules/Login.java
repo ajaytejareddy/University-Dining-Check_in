@@ -133,8 +133,8 @@ public class Login {
 			password = rsCust.getNString("password");
 			address = rsCust.getNString("address");
 			
-			System.out.format("\n%32s%16s\n","","User Login Successful");
-			System.out.format("\n%16s%s%16s%s\n","name = ",name,"email = ",email);
+			System.out.format("\n%16s%16s\n","","User Login Successful");
+			System.out.format("\n%s%s%16s%s\n","name = ",name,"email = ",email);
 			
 		}
 		catch(Exception e) {
